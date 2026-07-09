@@ -7,7 +7,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 ID_AFILIADO_MERCADO_LIVRE = "TARCFELL"
 ID_AFILIADO_AMAZON = "nsoc02-20"
 ID_AFILIADO_MAGALU = "tf"
-TOKEN = "8645090278:AAHoHCOdudL2iTewDKzbILAzIvAbfDoaDn8"
+TOKEN = "8645090278:AAGpMd9OgbJbyvoe9mjZF0Eu1sOPAandP04"
 
 class VisualSiteHandler(BaseHTTPRequestHandler):
     def do_HEAD(self):

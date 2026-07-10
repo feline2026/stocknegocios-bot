@@ -1,4 +1,0 @@
-python-telegram-bot[webhooks]
-httpx
-httpcore
-setuptools

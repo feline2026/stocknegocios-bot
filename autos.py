@@ -41,11 +41,11 @@ def disparar_site_web():
     porta = int(os.environ.get("PORT", 10000))
     HTTPServer(('0.0.0.0', porta), BuscadorSiteHandler).serve_forever()
 
-async def comando_start_novo(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data.clear()
     await update.message.reply_text("Olá! Envie o nome de um veículo ou produto para buscar:")
 
-async def executar_busca_veiculo(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def processar_busca_produto(update: Update, context: ContextTypes.DEFAULT_TYPE):
     produto = update.message.text.strip()
     t_site = urllib.parse.quote_plus(produto)
     t_olx = urllib.parse.quote_plus(produto)
@@ -53,7 +53,6 @@ async def executar_busca_veiculo(update: Update, context: ContextTypes.DEFAULT_T
     t_ml = urllib.parse.quote_plus(produto)
     t_az = urllib.parse.quote_plus(produto)
     
-    # Criando os links idênticos ao formato simplificado do outro projeto
     link_site = f"https://onrender.com{t_site}"
     link_olx = f"https://olx.com.br{t_olx}"
     link_wm = f"https://webmotors.com.br{t_wm}"
@@ -61,7 +60,6 @@ async def executar_busca_veiculo(update: Update, context: ContextTypes.DEFAULT_T
     link_ml = f"https://mercadolivre.com.br{t_ml}?as_campaign={ID_AFILIADO_MERCADO_LIVRE}"
     link_amazon = f"https://amazon.com.br{t_az}&tag={ID_AFILIADO_AMAZON}"
     
-    # Lista de botões copiada da foto do seu projeto que já funciona!
     botoes_links = [
         [InlineKeyboardButton("🌐 Ver no Mercado Livre", url=link_ml)],
         [InlineKeyboardButton("📦 Ver na Amazon", url=link_amazon)],
@@ -74,7 +72,6 @@ async def executar_busca_veiculo(update: Update, context: ContextTypes.DEFAULT_T
     
     structure_links = InlineKeyboardMarkup(botoes_links)
     
-    # CORREÇÃO: Enviando sem a vírgula travada no final da linha!
     await update.message.reply_text(
         f"Aqui estão os melhores resultados que encontrei para: *{produto}*\n\nClique no botão abaixo para ver as ofertas:",
         reply_markup=structure_links,
@@ -87,14 +84,13 @@ async def responder_botao_rebusca(update: Update, context: ContextTypes.DEFAULT_
     context.user_data.clear()
     await query.message.reply_text("Pode enviar o nome do novo produto que deseja buscar!")
 
-
 if __name__ == '__main__':
-    # Inicia o site visual na porta 10000 de forma limpa e isolada
+    # Liga o site na porta certa em segundo plano
     threading.Thread(target=disparar_site_web, daemon=True).start()
     
-    # Inicia o robô em modo estável sem chocar as portas de rede
-    app = ApplicationBuilder().token(TOKEN).build()
-    app.add_handler(CommandHandler("start", comando_start_novo))
-    app.add_handler(CallbackQueryHandler(acao_rebusca_nova, pattern='^rebuscar_novo$'))
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, executar_busca_veiculo))
-    app.run_polling()
+    # Monta as chamadas do Telegram casando os nomes idênticos da foto
+    application = ApplicationBuilder().token(TOKEN).build()
+    application.add_handler(CommandHandler("start", start))
+    application.add_handler(CallbackQueryHandler(responder_botao_rebusca, pattern='^buscar$'))
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, processar_busca_produto))
+    application.run_polling()

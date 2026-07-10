@@ -73,9 +73,22 @@ async def responder_botao_rebusca(update: Update, context: ContextTypes.DEFAULT_
     await update.callback_query.answer(); context.user_data.clear(); await update.callback_query.message.reply_text("Pode enviar a nova busca!")
 
 if __name__ == '__main__':
-    threading.Thread(target=ligar_site_producao, daemon=True).start()
+    # Cria o aplicativo do Telegram com o seu token fixo
     app = ApplicationBuilder().token(TOKEN).build()
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CallbackQueryHandler(responder_botao_rebusca, pattern='^buscar$'))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, processar_busca_produto))
-    app.run_polling()
+    
+    # Inicia o site visual em segundo plano
+    threading.Thread(target=ligar_site_producao, daemon=True).start()
+    
+    # ASSUMIR WEBHOOK: Conecta o Telegram diretamente ao link oficial do seu site no Render
+    # Isso destrói o erro de 'Conflict' porque tranca a rota em um único link!
+    porta_web = int(os.environ.get("PORT", 10000))
+    app.run_webhook(
+        listen="0.0.0.0",
+        port=porta_web,
+        url_path=TOKEN,
+        webhook_url=f"https://onrender.com{TOKEN}"
+    )
+

@@ -73,14 +73,13 @@ async def responder_botao_rebusca(update: Update, context: ContextTypes.DEFAULT_
     await update.callback_query.answer(); context.user_data.clear(); await update.callback_query.message.reply_text("Pode enviar a nova busca!")
 
 if __name__ == '__main__':
+    # Cria o aplicativo do Telegram
     app = ApplicationBuilder().token(TOKEN).build()
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CallbackQueryHandler(responder_botao_rebusca, pattern='^buscar$'))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, processar_busca_produto))
     
-    threading.Thread(target=ligar_site_producao, daemon=True).start()
-    
-    # CAMINHO TEXTUAL SEGURO: Evita que os caracteres do token quebrem a URL do Telegram
+    # O SEGREDO DO SUCESSO: O Webhook assume a porta e roda o site e o robô juntos na mesma rota!
     porta_web = int(os.environ.get("PORT", 10000))
     app.run_webhook(
         listen="0.0.0.0",
@@ -88,5 +87,6 @@ if __name__ == '__main__':
         url_path="webhook",
         webhook_url="https://onrender.com"
     )
+
 
 

@@ -26,11 +26,13 @@ class BuscadorSiteHandler(BaseHTTPRequestHandler):
             t_ml = urllib.parse.quote_plus(prod_texto)
             t_az = urllib.parse.quote_plus(prod_texto)
             
-            l_olx = f"https://olx.com.br{t_olx}"
-            l_wm = f"https://webmotors.com.br{t_wm}"
-            l_pl = f"https://olhonocarro.com.br{ID_AFILIADO_MAGALU}"
-            l_ml = f"https://mercadolivre.com.br{t_ml}?as_campaign={ID_AFILIADO_MERCADO_LIVRE}"
-            l_az = f"https://amazon.com.br{t_az}&tag={ID_AFILIADO_AMAZON}"
+            link_site = f"https://onrender.com{t_site}"
+            link_olx = f"https://olx.com.br{t_olx}"
+            link_wm = f"https://webmotors.com.br{t_wm}"
+            link_placa = f"https://olhonocarro.com.br{ID_AFILIADO_MAGALU}"
+            link_ml = f"https://mercadolivre.com.br{t_ml}?as_campaign={ID_AFILIADO_MERCADO_LIVRE}"
+            link_amazon = f"https://amazon.com.br{t_az}&tag={ID_AFILIADO_AMAZON}"
+
             
             texto_resultados = f"<h2>Resultados encontrados para: <span>{prod_texto}</span></h2>"
             html_botoes = f'<div class="box-botoes"><a href="{l_olx}" target="_blank" class="btn" style="background-color: #6E0AD6; color: white;">🚘 Ver na OLX</a><a href="{l_wm}" target="_blank" class="btn" style="background-color: #E31C23; color: white;">🚙 Ver na Webmotors</a><a href="{l_pl}" target="_blank" class="btn" style="background-color: #00A859; color: white;">🚨 Consultar Placa (10% OFF)</a><a href="{l_ml}" target="_blank" class="btn btn-ml">🔧 Ver no Mercado Livre</a><a href="{l_az}" target="_blank" class="btn btn-amazon">📦 Ver na Amazon</a></div>'

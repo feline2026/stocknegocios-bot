@@ -59,6 +59,7 @@ async def executar_busca_veiculo(update: Update, context: ContextTypes.DEFAULT_T
     url_placa = f"https://olhonocarro.com.br{ID_AFILIADO_MAGALU}"
     url_ml = f"https://mercadolivre.com.br{t_ml}?as_campaign={ID_AFILIADO_MERCADO_LIVRE}"
     url_amazon = f"https://amazon.com.br{t_az}&tag={ID_AFILIADO_AMAZON}"
+
     
     botoes = [
         [InlineKeyboardButton("🌐 Ver no Mercado Livre", url=url_ml)],

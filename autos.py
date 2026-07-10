@@ -76,7 +76,7 @@ class VisualSiteHandler(BaseHTTPRequestHandler):
     {{
       "@context": "https://schema.org",
       "@type": "WebApplication",
-      "name": "Não Sabe Onde Comprar",
+      "name": "stocknegocio",
       "alternateName": "Buscador de Ofertas Integrado tf",
       "url": "https://onrender.com",
       "applicationCategory": "ShoppingApplication",
@@ -94,7 +94,7 @@ class VisualSiteHandler(BaseHTTPRequestHandler):
 
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Não Sabe Onde Comprar - Clique Aqui</title>
+            <title>StockNegócio - Buscador Automotivo</title>
             <style>
                 body {{
                     margin: 0; padding: 0; background-color: #121214; color: #ffffff;

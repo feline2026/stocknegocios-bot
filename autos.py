@@ -53,27 +53,40 @@ async def executar_busca_veiculo(update: Update, context: ContextTypes.DEFAULT_T
     t_ml = urllib.parse.quote_plus(produto)
     t_az = urllib.parse.quote_plus(produto)
     
-    url_site = f"https://onrender.com{t_site}"
-    url_olx = f"https://olx.com.br{t_olx}"
-    url_wm = f"https://webmotors.com.br{t_wm}"
-    url_placa = f"https://olhonocarro.com.br{ID_AFILIADO_MAGALU}"
-    url_ml = f"https://mercadolivre.com.br{t_ml}?as_campaign={ID_AFILIADO_MERCADO_LIVRE}"
-    url_amazon = f"https://amazon.com.br{t_az}&tag={ID_AFILIADO_AMAZON}"
-
+    # Criando os links idênticos ao formato simplificado do outro projeto
+    link_site = f"https://onrender.com{t_site}"
+    link_olx = f"https://olx.com.br{t_olx}"
+    link_wm = f"https://webmotors.com.br{t_wm}"
+    link_placa = f"https://olhonocarro.com.br{ID_AFILIADO_MAGALU}"
+    link_ml = f"https://mercadolivre.com.br{t_ml}?as_campaign={ID_AFILIADO_MERCADO_LIVRE}"
+    link_amazon = f"https://amazon.com.br{t_az}&tag={ID_AFILIADO_AMAZON}"
     
-    botoes = [
-        [InlineKeyboardButton("🌐 Ver no Mercado Livre", url=url_ml)],
-        [InlineKeyboardButton("🌐 Ver na Amazon", url=url_amazon)],
-        [InlineKeyboardButton("🚘 Ver na OLX", url=url_olx)],
-        [InlineKeyboardButton("🚙 Ver na Webmotors", url=url_wm)],
-        [InlineKeyboardButton("🚨 Consultar Placa (10% OFF)", url=url_placa)],
-        [InlineKeyboardButton("🌐 Ver no Site Visual tf", url=url_site)],
-        [InlineKeyboardButton("🔄 Buscar outro produto", callback_data='rebuscar_novo')]
+    # Lista de botões copiada da foto do seu projeto que já funciona!
+    botoes_links = [
+        [InlineKeyboardButton("🌐 Ver no Mercado Livre", url=link_ml)],
+        [InlineKeyboardButton("📦 Ver na Amazon", url=link_amazon)],
+        [InlineKeyboardButton("🚘 Ver na OLX", url=link_olx)],
+        [InlineKeyboardButton("🚙 Ver na Webmotors", url=link_wm)],
+        [InlineKeyboardButton("🚨 Consultar Placa (10% OFF)", url=link_placa)],
+        [InlineKeyboardButton("🌐 Ver no Site Visual", url=link_site)],
+        [InlineKeyboardButton("🔄 Buscar outro produto", callback_data='buscar')]
     ]
-    await update.message.reply_text(f"Resultados para: *{produto}*\nClique abaixo:", reply_markup=InlineKeyboardMarkup(botoes), parse_mode="Markdown")
+    
+    structure_links = InlineKeyboardMarkup(botoes_links)
+    
+    # CORREÇÃO: Enviando sem a vírgula travada no final da linha!
+    await update.message.reply_text(
+        f"Aqui estão os melhores resultados que encontrei para: *{produto}*\n\nClique no botão abaixo para ver as ofertas:",
+        reply_markup=structure_links,
+        parse_mode="Markdown"
+    )
 
-async def acao_rebusca_nova(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.callback_query.answer(); context.user_data.clear(); await update.callback_query.message.reply_text("Pode enviar a nova busca!")
+async def responder_botao_rebusca(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    context.user_data.clear()
+    await query.message.reply_text("Pode enviar o nome do novo produto que deseja buscar!")
+
 
 if __name__ == '__main__':
     # Inicia o site visual na porta 10000 de forma limpa e isolada

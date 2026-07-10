@@ -1,79 +1,208 @@
 import urllib.parse
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, CallbackQueryHandler, ContextTypes, filters
-import os, threading
+from telegram.ext import (
+    ApplicationBuilder,
+    CommandHandler,
+    MessageHandler,
+    CallbackQueryHandler,
+    ContextTypes,
+    filters
+)
+import os
+import threading
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
-ID_AFILIADO_MERCADO_LIVRE = "TARCFELL"
-ID_AFILIADO_AMAZON = "nsoc02-20"
-ID_AFILIADO_MAGALU = "tf"
-
-# Token fixado direto no topo do arquivo para não depender de caixinhas
-TOKEN = os.environ.get("TOKEN_STOCK")
-
-class BuscadorSiteHandler(BaseHTTPRequestHandler):
+# =====================================================================
+#  ⚙️ CÓDIGO DO SITE (VISUAL PREMIUM + ROTAS DIRETAS DE BUSCA)
+# =====================================================================
+class VisualSiteHandler(BaseHTTPRequestHandler):
     def do_HEAD(self):
-        self.send_response(200); self.send_header('Content-type', 'text/html; charset=utf-8'); self.end_headers()
+        self.send_response(200)
+        self.send_header('Content-type', 'text/html; charset=utf-8')
+        self.end_headers()
+
     def do_GET(self):
-        self.send_response(200); self.send_header('Content-type', 'text/html; charset=utf-8'); self.end_headers()
-        prod_texto = ""; html_botoes = ""; texto_resultados = "<h2>StockNegócio - Buscador Automotivo Ativo!</h2>"
+        self.send_response(200)
+        self.send_header('Content-type', 'text/html; charset=utf-8')
+        self.end_headers()
+        
         query_params = urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query)
         produto = query_params.get('p', [''])
+        
+        html_botoes = ""
+        texto_resultados = ""
+        
+        # Correção da lista: Extrai a busca sem os colchetes ['']
         if produto and produto[0]:
             prod_texto = produto[0].strip()
-            t_olx = urllib.parse.quote_plus(prod_texto)
-            t_wm = urllib.parse.quote_plus(prod_texto.lower().replace(" ", "-"))
-            t_ml = urllib.parse.quote_plus(prod_texto)
-            t_az = urllib.parse.quote_plus(prod_texto)
             
-            link_site = f"https://onrender.com{t_site}"
-            link_olx = f"https://olx.com.br{t_olx}"
-            link_wm = f"https://webmotors.com.br{t_wm}"
-            link_placa = f"https://olhonocarro.com.br{ID_AFILIADO_MAGALU}"
-            link_ml = f"https://mercadolivre.com.br{t_ml}?as_campaign={ID_AFILIADO_MERCADO_LIVRE}"
-            link_amazon = f"https://amazon.com.br{t_az}&tag={ID_AFILIADO_AMAZON}"
+            # --- CONFIGURAÇÃO DOS AFILIADOS ---
+            ID_AFILIADO_MERCADO_LIVRE = "TARCFELL"
+            ID_AFILIADO_SHOPEE = "18325271196"
+            ID_AFILIADO_AMAZON = "nsoc02-20"
+            ID_AFILIADO_MAGALU = "tf"       
+            ID_AFILIADO_ALIEXPRESS = "tf"
 
-            
+            # Formatação de strings limpas para as buscas
+            termo_ml = urllib.parse.quote_plus(prod_texto.replace(" ", "-"))
+            termo_shopee = urllib.parse.quote_plus(prod_texto.lower().replace(" ", "-"))
+            termo_amazon = urllib.parse.quote_plus(prod_texto)
+            termo_magalu = urllib.parse.quote_plus(prod_texto)
+            termo_aliexpress = urllib.parse.quote_plus(prod_texto)
+
+            # --- LINKS DAS LOJAS ---
+            link_ml = f"https://lista.mercadolivre.com.br/{termo_ml}?as_campaign={ID_AFILIADO_MERCADO_LIVRE}"
+            link_shopee = f"https://shopee.com.br/list/{termo_shopee}?utm_campaign=-&utm_content={ID_AFILIADO_SHOPEE}"
+            link_amazon = f"https://www.amazon.com.br/s?k={termo_amazon}&tag={ID_AFILIADO_AMAZON}"
+            link_magalu = f"https://www.magazineluiza.com.br/busca/{termo_magalu}?partner_id={ID_AFILIADO_MAGALU}"
+            link_aliexpress = f"https://pt.aliexpress.com/wholesale?SearchText={termo_aliexpress}&af={ID_AFILIADO_ALIEXPRESS}"
+
             texto_resultados = f"<h2>Resultados encontrados para: <span>{prod_texto}</span></h2>"
-            html_botoes = f'<div class="box-botoes"><a href="{l_olx}" target="_blank" class="btn" style="background-color: #6E0AD6; color: white;">🚘 Ver na OLX</a><a href="{l_wm}" target="_blank" class="btn" style="background-color: #E31C23; color: white;">🚙 Ver na Webmotors</a><a href="{l_pl}" target="_blank" class="btn" style="background-color: #00A859; color: white;">🚨 Consultar Placa (10% OFF)</a><a href="{l_ml}" target="_blank" class="btn btn-ml">🔧 Ver no Mercado Livre</a><a href="{l_az}" target="_blank" class="btn btn-amazon">📦 Ver na Amazon</a></div>'
-        html_pagina = f"""<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>StockNegócio</title><style>body {{ margin: 0; padding: 0; background-color: #121212; color: #ffffff; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: space-between; min-height: 100vh; }} .container {{ width: 100%; max-width: 500px; padding: 40px 20px; text-align: center; box-sizing: border-box; margin: 0 auto; }} h1 {{ font-size: 26px; }} .box-botoes {{ display: flex; flex-direction: column; gap: 12px; width: 100%; margin-top: 24px; }} .btn {{ display: block; width: 100%; padding: 16px; border-radius: 8px; text-decoration: none; font-weight: bold; text-align: center; box-sizing: border-box; transition: transform 0.2s; }} .btn:hover {{ transform: scale(1.02); }} .btn-ml {{ background-color: #FFF159; color: #333333; }} .btn-amazon {{ background-color: #FF9900; color: #111111; }} .telegram {{ background-color: #00b37e; color: white; margin-top: 20px; }} input[type="text"] {{ width: 100%; padding: 16px; border: 2px solid #29292e; border-radius: 8px; background-color: #202024; color: #ffffff; font-size: 16px; box-sizing: border-box; }} button {{ width: 100%; padding: 16px; border: none; border-radius: 8px; background-color: #00b37e; color: white; font-size: 16px; font-weight: bold; margin-top: 10px; }} footer {{ width: 100%; padding: 15px; text-align: center; font-size: 12px; color: #737380; background-color: #1a1a1e; box-sizing: border-box; }} footer a {{ color: #00b37e; text-decoration: none; font-weight: bold; }}</style></head><body><div class="container"><h1>🏎️ StockNegócio</h1><div>{texto_resultados}</div><form action="/" method="GET"><input type="text" name="p" value="{prod_texto}" placeholder="O que deseja buscar?"><button type="submit">Buscar Ofertas</button></form>{html_botoes}<a href="https://t.me" target="_blank" class="btn telegram">💬 Abrir no Telegram</a></div><footer>Buscador gratuito e independente de utilidade pública. <a href="#" onclick="alert('Aviso de Transparência:\\n\\nNão coletamos dados pessoais.')">Aviso de Transparência</a></footer></body></html>"""
+            html_botoes = f"""
+            <div class="box-botoes">
+                <a href="{link_ml}" target="_blank" class="btn btn-ml">🛒 Ver no Mercado Livre</a>
+                <a href="{link_shopee}" target="_blank" class="btn btn-shopee">🛍️ Ver na Shopee</a>
+                <a href="{link_amazon}" target="_blank" class="btn btn-amazon">📦 Ver na Amazon</a>
+                <a href="{link_magalu}" target="_blank" class="btn btn-magalu">💙 Ver na Magalu</a>
+                <a href="{link_aliexpress}" target="_blank" class="btn btn-aliexpress" style="background-color: #FF4747; color: white;">Ver no AliExpress</a>
+            </div>
+            """
+
+        html_pagina = f"""
+        <!DOCTYPE html>
+        <html lang="pt-BR">
+        <head>
+            <script type="application/ld+json">
+    {{
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Não Sabe Onde Comprar",
+      "alternateName": "Buscador de Ofertas Integrado tf",
+      "url": "https://onrender.com",
+      "applicationCategory": "ShoppingApplication",
+      "operatingSystem": "All",
+      "browserRequirements": "Requires HTML5 support",
+      "description": "Buscador inteligente e automatizado de ofertas em tempo real. Compara preços instantaneamente e encontra cupons validados no Mercado Livre, Shopee, Amazon, Magalu e AliExpress.",
+      "offers": {{
+        "@type": "Offer",
+        "price": "0.00",
+        "priceCurrency": "BRL"
+      }},
+      "featureList": "Comparador de preços automático, busca integrada multiloja, redirecionamento seguro com tracking tf, integração direta com robô do Telegram"
+    }}
+    </script>
+
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Não Sabe Onde Comprar - Clique Aqui</title>
+            <style>
+                body {{
+                    margin: 0; padding: 0; background-color: #121214; color: #ffffff;
+                    font-family: 'Segoe UI', Arial, sans-serif;
+                    display: flex; flex-direction: column; align-items: center; justify-content: space-between; min-height: 100vh;
+                }}
+                .container {{ width: 100%; max-width: 500px; padding: 40px 20px; text-align: center; box-sizing: border-box; margin: auto; }}
+                h1 {{ font-size: 26px; margin-bottom: 5px; font-weight: 800; }}
+                .sub {{ color: #a8a8b3; font-size: 16px; margin-bottom: 40px; }}
+                form {{ width: 100%; display: flex; flex-direction: column; gap: 15px; }}
+                input[type="text"] {{
+                    width: 100%; padding: 16px; border: 2px solid #29292e; border-radius: 8px;
+                    background-color: #202024; color: #ffffff; font-size: 16px; outline: none; box-sizing: border-box;
+                }}
+                input[type="text"]:focus {{ border-color: #00b37e; }}
+                button {{
+                    width: 100%; padding: 16px; border: none; border-radius: 8px;
+                    background-color: #00b37e; color: #ffffff; font-size: 16px; font-weight: bold; cursor: pointer;
+                }}
+                h2 {{ font-size: 16px; color: #a8a8b3; margin-top: 30px; }}
+                h2 span {{ color: #00b37e; }}
+                .box-botoes {{ display: flex; flex-direction: column; gap: 12px; width: 100%; margin-top: 20px; }}
+                .btn {{
+                    display: block; padding: 16px; text-decoration: none; color: white; font-weight: bold;
+                    border-radius: 8px; text-align: center; font-size: 15px;
+                }}
+                .btn-ml {{ background-color: #fff159; color: #333333; }}
+                .btn-shopee {{ background-color: #ee4d2d; }}
+                .btn-amazon {{ background-color: #ff9900; color: #111111; }}
+                .btn-magalu {{ background-color: #0086ff; color: white; }}
+                .btn-netshoes {{ background-color: #532d85; color: white; }}
+                
+                footer {{ width: 100%; padding: 15px; text-align: center; font-size: 12px; color: #737380; background-color: #1a1a1e; box-sizing: border-box; }}
+                footer a {{ color: #00b37e; text-decoration: none; font-weight: bold; }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>Não Sabe Onde Comprar</h1>
+                <div class="sub">Clique Aqui 👇</div>
+                
+                <form action="/" method="GET">
+                    <input type="text" name="p" value="{produto[0] if produto and produto[0] else ''}" placeholder="O que você quer buscar hoje?" required>
+                    <button type="submit">🔍 Buscar Ofertas</button>
+                </form>
+                
+                {texto_resultados}
+                {html_botoes}
+            </div>
+            
+            <footer>
+                Buscador gratuito e independente de utilidade pública. <a href="#" onclick="alert('Aviso de Transparência:\\n\\nO naosabeondecomprar é um buscador independente de ofertas. Não realizamos vendas, não processamos pagamentos e não coletamos dados pessoais.\\n\\nAo clicar nos botões que direcionam para as lojas parceiras (Mercado Livre, Amazon, Shopee, Magalu e Netshoes), nós poderemos receber uma comissão caso uma compra seja realizada, sem nenhum custo adicional para você.')">Informações de Transparência</a>
+            </footer>
+        </body>
+        </html>
+        """
         self.wfile.write(html_pagina.encode('utf-8'))
 
-def disparar_site_web():
+def ligar_site_producao():
     porta = int(os.environ.get("PORT", 10000))
-    HTTPServer(('0.0.0.0', porta), BuscadorSiteHandler).serve_forever()
+    server = HTTPServer(('0.0.0.0', porta), VisualSiteHandler)
+    server.serve_forever()
+
+# =====================================================================
+#  🤖 CÓDIGO DO ROBÔ DO TELEGRAM (FORMATO SEGURO E CORRIGIDO)
+# =====================================================================
+TOKEN = os.environ.get("TELEGRAM_TOKEN")
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data.clear()
-    await update.message.reply_text("Olá! Envie o nome de um veículo ou produto para buscar:")
+    await update.message.reply_text("Olá! Envie o nome de um produto para buscar.")
 
 async def processar_busca_produto(update: Update, context: ContextTypes.DEFAULT_TYPE):
     produto = update.message.text.strip()
-    t_site = urllib.parse.quote_plus(produto)
-    t_olx = urllib.parse.quote_plus(produto)
-    t_wm = urllib.parse.quote_plus(produto.lower().replace(" ", "-"))
-    t_ml = urllib.parse.quote_plus(produto)
-    t_az = urllib.parse.quote_plus(produto)
-    
-    link_site = f"https://onrender.com{t_site}"
-    link_olx = f"https://olx.com.br{t_olx}"
-    link_wm = f"https://webmotors.com.br{t_wm}"
-    link_placa = f"https://olhonocarro.com.br{ID_AFILIADO_MAGALU}"
-    link_ml = f"https://mercadolivre.com.br{t_ml}?as_campaign={ID_AFILIADO_MERCADO_LIVRE}"
-    link_amazon = f"https://amazon.com.br{t_az}&tag={ID_AFILIADO_AMAZON}"
-    
+
+    # --- CONFIGURAÇÃO DOS AFILIADOS NO BOT ---
+    ID_AFILIADO_MERCADO_LIVRE = "TARCFELL"
+    ID_AFILIADO_SHOPEE = "18325271196"
+    ID_AFILIADO_AMAZON = "nsoc02-20"
+    ID_AFILIADO_MAGALU = "tf"       
+    ID_AFILIADO_ALIEXPRESS = "tf"         
+
+    # Formatação usando quote_plus (Corrigido: adicionado termo_netshoes)
+    termo_ml = urllib.parse.quote_plus(produto.replace(" ", "-"))
+    termo_shopee = urllib.parse.quote_plus(produto.lower().replace(" ", "-"))
+    termo_amazon = urllib.parse.quote_plus(produto)
+    termo_magalu = urllib.parse.quote_plus(produto)
+    termo_aliexpress = urllib.parse.quote_plus(produto)
+
+    # Links parametrizados corrigidos com as rotas exatas de busca (/list/, /s?k=, /busca/)
+    link_ml = f"https://lista.mercadolivre.com.br/{termo_ml}?as_campaign={ID_AFILIADO_MERCADO_LIVRE}"
+    link_shopee = f"https://shopee.com.br/list/{termo_shopee}?utm_campaign=-&utm_content={ID_AFILIADO_SHOPEE}"
+    link_amazon = f"https://www.amazon.com.br/s?k={termo_amazon}&tag={ID_AFILIADO_AMAZON}"
+    link_magalu = f"https://www.magazineluiza.com.br/busca/{termo_magalu}?partner_id={ID_AFILIADO_MAGALU}"
+    link_aliexpress = f"https://pt.aliexpress.com/wholesale?SearchText={termo_aliexpress}&af={ID_AFILIADO_ALIEXPRESS}"
+
+
     botoes_links = [
-        [InlineKeyboardButton("🌐 Ver no Mercado Livre", url=link_ml)],
+        [InlineKeyboardButton("🛒 Ver no Mercado Livre", url=link_ml)],
+        [InlineKeyboardButton("🛍️ Ver na Shopee", url=link_shopee)],
         [InlineKeyboardButton("📦 Ver na Amazon", url=link_amazon)],
-        [InlineKeyboardButton("🚘 Ver na OLX", url=link_olx)],
-        [InlineKeyboardButton("🚙 Ver na Webmotors", url=link_wm)],
-        [InlineKeyboardButton("🚨 Consultar Placa (10% OFF)", url=link_placa)],
-        [InlineKeyboardButton("🌐 Ver no Site Visual", url=link_site)],
+        [InlineKeyboardButton("💙 Ver na Magalu", url=link_magalu)],
+        [InlineKeyboardButton("🇨🇳 Ver no AliExpress", url=link_aliexpress)],
         [InlineKeyboardButton("🔄 Buscar outro produto", callback_data='buscar')]
     ]
-    
+
     structure_links = InlineKeyboardMarkup(botoes_links)
-    
+
     await update.message.reply_text(
         f"Aqui estão os melhores resultados que encontrei para: *{produto}*\n\nClique no botão abaixo para ver as ofertas:",
         reply_markup=structure_links,
@@ -87,10 +216,9 @@ async def responder_botao_rebusca(update: Update, context: ContextTypes.DEFAULT_
     await query.message.reply_text("Pode enviar o nome do novo produto que deseja buscar!")
 
 if __name__ == '__main__':
-    # Liga o site na porta certa em segundo plano
-    threading.Thread(target=disparar_site_web, daemon=True).start()
-    
-    # Monta as chamadas do Telegram casando os nomes idênticos da foto
+    # ADICIONE APENAS ESTA LINHA ABAIXO (Ela liga o site junto com o Telegram):
+    threading.Thread(target=ligar_site_producao, daemon=True).start()
+
     application = ApplicationBuilder().token(TOKEN).build()
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CallbackQueryHandler(responder_botao_rebusca, pattern='^buscar$'))

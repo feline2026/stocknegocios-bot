@@ -54,7 +54,7 @@ class VisualSiteHandler(BaseHTTPRequestHandler):
             link_ml = f"https://lista.mercadolivre.com.br/{termo_ml}?as_campaign={ID_AFILIADO_MERCADO_LIVRE}"
             link_shopee = f"https://shopee.com.br/list/{termo_shopee}?utm_campaign=-&utm_content={ID_AFILIADO_SHOPEE}"
             link_amazon = f"https://www.amazon.com.br/s?k={termo_amazon}&tag={ID_AFILIADO_AMAZON}"
-            link_olx = f"https://olx.com.br{termo_olx}"
+            link_olx = f"https://lista.olx.com.br/{termo_olx}"
             link_aliexpress = f"https://pt.aliexpress.com/wholesale?SearchText={termo_aliexpress}&af={ID_AFILIADO_ALIEXPRESS}"
 
             texto_resultados = "<h2>StockNegócios - Buscador Automotivo Ativo!</h2>"
@@ -174,21 +174,21 @@ async def processar_busca_produto(update: Update, context: ContextTypes.DEFAULT_
     ID_AFILIADO_MERCADO_LIVRE = "TARCFELL"
     ID_AFILIADO_SHOPEE = "18325271196"
     ID_AFILIADO_AMAZON = "nsoc02-20"
-    ID_AFILIADO_olx = "tf"       
+    ID_AFILIADO_MAGALU = "tf"       
     ID_AFILIADO_ALIEXPRESS = "tf"         
 
     # Formatação usando quote_plus (Corrigido: adicionado termo_netshoes)
     termo_ml = urllib.parse.quote_plus(produto.replace(" ", "-"))
     termo_shopee = urllib.parse.quote_plus(produto.lower().replace(" ", "-"))
     termo_amazon = urllib.parse.quote_plus(produto)
-    termo_olx = urllib.parse.quote_plus(produto)
+    termo_magalu = urllib.parse.quote_plus(produto)
     termo_aliexpress = urllib.parse.quote_plus(produto)
 
     # Links parametrizados corrigidos com as rotas exatas de busca (/list/, /s?k=, /busca/)
     link_ml = f"https://lista.mercadolivre.com.br/{termo_ml}?as_campaign={ID_AFILIADO_MERCADO_LIVRE}"
     link_shopee = f"https://shopee.com.br/list/{termo_shopee}?utm_campaign=-&utm_content={ID_AFILIADO_SHOPEE}"
     link_amazon = f"https://www.amazon.com.br/s?k={termo_amazon}&tag={ID_AFILIADO_AMAZON}"
-    link_olx = f"https://olx.com.br{termo_olx}"
+    link_magalu = f"https://www.magazineluiza.com.br/busca/{termo_magalu}?partner_id={ID_AFILIADO_MAGALU}"
     link_aliexpress = f"https://pt.aliexpress.com/wholesale?SearchText={termo_aliexpress}&af={ID_AFILIADO_ALIEXPRESS}"
 
 
@@ -196,7 +196,7 @@ async def processar_busca_produto(update: Update, context: ContextTypes.DEFAULT_
         [InlineKeyboardButton("🛒 Ver no Mercado Livre", url=link_ml)],
         [InlineKeyboardButton("🛍️ Ver na Shopee", url=link_shopee)],
         [InlineKeyboardButton("📦 Ver na Amazon", url=link_amazon)],
-        [InlineKeyboardButton("💙 Ver na olx", url=link_olx)],
+        [InlineKeyboardButton("💙 Ver na Magalu", url=link_magalu)],
         [InlineKeyboardButton("🇨🇳 Ver no AliExpress", url=link_aliexpress)],
         [InlineKeyboardButton("🔄 Buscar outro produto", callback_data='buscar')]
     ]

@@ -57,7 +57,7 @@ class VisualSiteHandler(BaseHTTPRequestHandler):
             link_magalu = f"https://www.magazineluiza.com.br/busca/{termo_magalu}?partner_id={ID_AFILIADO_MAGALU}"
             link_aliexpress = f"https://pt.aliexpress.com/wholesale?SearchText={termo_aliexpress}&af={ID_AFILIADO_ALIEXPRESS}"
 
-            texto_resultados = f"<h2>Resultados encontrados para: <span>{prod_texto}</span></h2>"
+            texto_resultados = "<h2>StockNegócio - Buscador Automotivo Ativo!</h2>"
             html_botoes = f"""
             <div class="box-botoes">
                 <a href="{link_ml}" target="_blank" class="btn btn-ml">🛒 Ver no Mercado Livre</a>
@@ -133,7 +133,7 @@ class VisualSiteHandler(BaseHTTPRequestHandler):
         </head>
         <body>
             <div class="container">
-                <h1>Não Sabe Onde Comprar</h1>
+                <h1>🏎️ StockNegócio</h1>
                 <div class="sub">Clique Aqui 👇</div>
                 
                 <form action="/" method="GET">
@@ -146,7 +146,7 @@ class VisualSiteHandler(BaseHTTPRequestHandler):
             </div>
             
             <footer>
-                Buscador gratuito e independente de utilidade pública. <a href="#" onclick="alert('Aviso de Transparência:\\n\\nO naosabeondecomprar é um buscador independente de ofertas. Não realizamos vendas, não processamos pagamentos e não coletamos dados pessoais.\\n\\nAo clicar nos botões que direcionam para as lojas parceiras (Mercado Livre, Amazon, Shopee, Magalu e Netshoes), nós poderemos receber uma comissão caso uma compra seja realizada, sem nenhum custo adicional para você.')">Informações de Transparência</a>
+                texto_lgpd = "Aviso de Transparência e Privacidade:\\n\\nO StockNegócio é um buscador automotivo independente de utilidade pública. Não coletamos, não armazenamos e não comercializamos nenhum dado pessoal ou histórico de busca dos usuários. Os botões de consulta e lojas utilizam links de redirecionamento oficiais com tags de afiliados. Ao realizar uma compra ou consulta por meio deles, você apoia a manutenção gratuita deste robô."
             </footer>
         </body>
         </html>

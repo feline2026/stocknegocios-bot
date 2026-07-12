@@ -63,7 +63,7 @@ class VisualSiteHandler(BaseHTTPRequestHandler):
                 <a href="{link_ml}" target="_blank" class="btn btn-ml">🛒 Ver no Mercado Livre</a>
                 <a href="{link_shopee}" target="_blank" class="btn btn-shopee">🛍️ Ver na Shopee</a>
                 <a href="{link_amazon}" target="_blank" class="btn btn-amazon">📦 Ver na Amazon</a>
-                <a href="{link_olx}" target="_blank" class="btn btn-olx">💙 Ver na olx</a>
+                <a href="{link_olx}" target="_blank" class="btn" style="background-color: #6E0AD6; color: white;">🚘 Buscar na OLX Autos</a>
                 <a href="{link_aliexpress}" target="_blank" class="btn btn-aliexpress" style="background-color: #FF4747; color: white;">Ver no AliExpress</a>
             </div>
             """

@@ -54,7 +54,7 @@ class VisualSiteHandler(BaseHTTPRequestHandler):
             link_ml = f"https://lista.mercadolivre.com.br/{termo_ml}?as_campaign={ID_AFILIADO_MERCADO_LIVRE}"
             link_shopee = f"https://shopee.com.br/list/{termo_shopee}?utm_campaign=-&utm_content={ID_AFILIADO_SHOPEE}"
             link_amazon = f"https://www.amazon.com.br/s?k={termo_amazon}&tag={ID_AFILIADO_AMAZON}"
-            link_olx = f"https://www.olx.com.br{termo_olx}"
+            link_olx = f"https://www.olx.com.br?q={termo_olx}"
             link_aliexpress = f"https://pt.aliexpress.com/wholesale?SearchText={termo_aliexpress}&af={ID_AFILIADO_ALIEXPRESS}"
 
             texto_resultados = "<h2>StockNegócios - Buscador Automotivo Ativo!</h2>"

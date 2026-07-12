@@ -197,7 +197,7 @@ async def processar_busca_produto(update: Update, context: ContextTypes.DEFAULT_
         [InlineKeyboardButton("🛍️ Ver na Shopee", url=link_shopee)],
         [InlineKeyboardButton("📦 Ver na Amazon", url=link_amazon)],
         [InlineKeyboardButton("🚘 Ver na OLX Autos (SP)", url=link_olx)],
-        [InlineKeyboardButton("🇨🇳 Ver no aliexpress", url=link_aliexpess)],
+        [InlineKeyboardButton("🇨🇳 Ver no AliExpress", url=link_aliexpress)],
         [InlineKeyboardButton("🔄 Buscar outro produto", callback_data='buscar')]
     ]
 

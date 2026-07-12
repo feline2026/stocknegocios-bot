@@ -82,7 +82,7 @@ class VisualSiteHandler(BaseHTTPRequestHandler):
       "applicationCategory": "ShoppingApplication",
       "operatingSystem": "All",
       "browserRequirements": "Requires HTML5 support",
-      "description": "Buscador inteligente e automatizado de ofertas em tempo real. Compara preços instantaneamente e encontra cupons validados no Mercado Livre, Shopee, Amazon, Magalu e AliExpress.",
+      "description": "Buscador inteligente e automatizado de ofertas em tempo real. Compara preços instantaneamente e encontra cupons validados no Mercado Livre, Shopee, Amazon, olx e AliExpress.",
       "offers": {{
         "@type": "Offer",
         "price": "0.00",

@@ -231,9 +231,7 @@ async def responder_botao_rebusca(update: Update, context: ContextTypes.DEFAULT_
     query = update.callback_query
     await query.answer()
     context.user_data.clear()
-    # Dispara a IA do Google antes de soltar os botões funcionais
-    avaliacao_texto = obter_avaliacao_ia(produto)
-    await update.message.reply_text(f"{avaliacao_texto}\n\n👇 *Confira as ofertas disponíveis:*", reply_markup=InlineKeyboardMarkup(botoes_links), parse_mode="Markdown")
+    await query.edit_message_text(text="🏎️ Digite o nome do novo veículo que deseja buscar:")
 
 
 if __name__ == '__main__':

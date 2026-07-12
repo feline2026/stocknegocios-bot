@@ -10,6 +10,7 @@ from telegram.ext import (
 )
 import os
 import threading
+import httpx
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
 # =====================================================================
@@ -162,6 +163,23 @@ def ligar_site_producao():
 #  🤖 CÓDIGO DO ROBÔ DO TELEGRAM (FORMATO SEGURO E CORRIGIDO)
 # =====================================================================
 TOKEN = os.environ.get("TELEGRAM_TOKEN")
+def obter_avaliacao_ia(nome_veiculo):
+    api_key = os.environ.get("GEMINI_API_KEY")
+    if not api_key:
+        return "🤖 *Avaliação Inteligente StockNegócios:*\n_O avaliador automático está sendo configurado._"
+    
+    url = f"https://googleapis.com{api_key}"
+    headers = {"Content-Type": "application/json"}
+    prompt = f"Aja como um especialista em carros usados no Brasil. Faça uma mini avaliação do veículo '{nome_veiculo}'. Diga em formato de tópicos curtos: 1) Uma estimativa real de preço médio de mercado atual para esse ano. 2) Pontos fortes do carro. 3) O que o comprador deve checar antes de fechar negócio para não cair em cilada. Seja curto, direto e use emojis."
+    payload = {"contents": [{"parts": [{"text": prompt}]}]}
+    
+    try:
+        response = httpx.post(url, json=payload, headers=headers, timeout=15.0)
+        if response.status_code == 200:
+            return response.json()['candidates'][0]['content']['parts'][0]['text']
+        return "🤖 *Avaliação Inteligente StockNegócios:*\n_O sistema do Google está ocupado, confira os preços nos botões abaixo!_"
+    except Exception:
+        return "🤖 *Avaliação Inteligente StockNegócios:*\n_Consulte as ofertas locais e preços nos botões abaixo!_"
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data.clear()
@@ -213,7 +231,10 @@ async def responder_botao_rebusca(update: Update, context: ContextTypes.DEFAULT_
     query = update.callback_query
     await query.answer()
     context.user_data.clear()
-    await query.message.reply_text("Pode enviar o nome do novo produto que deseja buscar!")
+    # Dispara a IA do Google antes de soltar os botões funcionais
+    avaliacao_texto = obter_avaliacao_ia(produto)
+    await update.message.reply_text(f"{avaliacao_texto}\n\n👇 *Confira as ofertas disponíveis:*", reply_markup=InlineKeyboardMarkup(botoes_links), parse_mode="Markdown")
+
 
 if __name__ == '__main__':
     # ADICIONE APENAS ESTA LINHA ABAIXO (Ela liga o site junto com o Telegram):

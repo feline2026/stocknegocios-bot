@@ -191,7 +191,9 @@ def obter_avaliacao_ia(nome_veiculo):
     payload = {"contents": [{"parts": [{"text": prompt}]}]}
     
     try:
-        response = httpx.post(url, json=payload, headers=headers, timeout=10.0)
+        # Adicionamos o "verify=False" para o servidor do Render não barrar o sinal do Google
+        response = httpx.post(url, json=payload, headers=headers, timeout=10.0, verify=False)
+
         if response.status_code == 200:
             return response.json()['candidates']['content']['parts']['text']
         return "🤖 *Avaliação:* Confira os preços nos botões abaixo."

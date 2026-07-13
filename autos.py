@@ -242,6 +242,10 @@ if __name__ == '__main__':
 
     application = ApplicationBuilder().token(TOKEN).build()
     application.add_handler(CommandHandler("start", start))
-    application.add_handler(CallbackQueryHandler(responder_botao_rebusca, pattern='^buscar$'))
+    
+    # LINHA CORRIGIDA SEM TEXTO QUEBRADO NO FINAL:
+    application.add_handler(CallbackQueryHandler(responder_botao_rebusca))
+    
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, processar_busca_produto))
     application.run_polling()
+

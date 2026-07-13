@@ -34,8 +34,9 @@ class VisualSiteHandler(BaseHTTPRequestHandler):
         texto_resultados = ""
         
         # Correção da lista: Extrai a busca sem os colchetes ['']
-        if produto and produto[0]:
-            prod_texto = produto[0].strip()
+        if produto and produto:
+            prod_texto = produto.strip() if isinstance(produto, list) else produto.strip()
+            termo_olx = urllib.parse.quote_plus(prod_texto)
             
             # --- CONFIGURAÇÃO DOS AFILIADOS ---
             ID_AFILIADO_MERCADO_LIVRE = "TARCFELL"
@@ -51,15 +52,21 @@ class VisualSiteHandler(BaseHTTPRequestHandler):
             termo_olx = urllib.parse.quote_plus(prod_texto)
             termo_aliexpress = urllib.parse.quote_plus(prod_texto)
 
-            # --- LINKS DAS LOJAS ---
+            # CHAMA A AVALIAÇÃO DA IA DO GOOGLE PARA O SITE VISUAL
+            avaliacao_site = obter_avaliacao_ia(prod_texto)
+            # Transforma as quebras de linha da IA em quebras de linha que o site entende (<br>)
+            avaliacao_html = avaliacao_site.replace("\n", "<br>")
+            
             link_ml = f"https://lista.mercadolivre.com.br/{termo_ml}?as_campaign={ID_AFILIADO_MERCADO_LIVRE}"
             link_shopee = f"https://shopee.com.br/list/{termo_shopee}?utm_campaign=-&utm_content={ID_AFILIADO_SHOPEE}"
             link_amazon = f"https://www.amazon.com.br/s?k={termo_amazon}&tag={ID_AFILIADO_AMAZON}"
             link_olx = f"https://www.olx.com.br/estado-sp?q={termo_olx}"
             link_aliexpress = f"https://pt.aliexpress.com/wholesale?SearchText={termo_aliexpress}&af={ID_AFILIADO_ALIEXPRESS}"
 
-            texto_resultados = "<h2>StockNegócios - Buscador Automotivo Ativo!</h2>"
+            # Aqui a IA é injetada direto na tela do usuário
+            texto_resultados = f"<h2>Resultados para: <span>{prod_texto}</span></h2><div style='background: #1a1a1e; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: left; font-size: 14px; line-height: 1.6;'>{avaliacao_html}</div>"
             html_botoes = f"""
+            
             <div class="box-botoes">
                 <a href="{link_ml}" target="_blank" class="btn btn-ml">🛒 Ver no Mercado Livre</a>
                 <a href="{link_shopee}" target="_blank" class="btn btn-shopee">🛍️ Ver na Shopee</a>

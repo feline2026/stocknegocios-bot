@@ -52,10 +52,11 @@ class VisualSiteHandler(BaseHTTPRequestHandler):
             termo_olx = urllib.parse.quote_plus(prod_texto)
             termo_aliexpress = urllib.parse.quote_plus(prod_texto)
 
-            # CHAMA A AVALIAÇÃO DA IA DO GOOGLE PARA O SITE VISUAL
+            # --- INTEGRAÇÃO DA IA COM LIMPEZA DE SÍMBOLOS PARA O SITE ---
             avaliacao_site = obter_avaliacao_ia(prod_texto)
-            # Transforma as quebras de linha da IA em quebras de linha que o site entende (<br>)
-            avaliacao_html = avaliacao_site.replace("\n", "<br>")
+            # Remove os asteriscos duplos que o Gemini manda e que travam o navegador
+            avaliacao_limpa = avaliacao_site.replace("**", "").replace("*", "")
+            avaliacao_html = avaliacao_limpa.replace("\n", "<br>")
             
             link_ml = f"https://lista.mercadolivre.com.br/{termo_ml}?as_campaign={ID_AFILIADO_MERCADO_LIVRE}"
             link_shopee = f"https://shopee.com.br/list/{termo_shopee}?utm_campaign=-&utm_content={ID_AFILIADO_SHOPEE}"

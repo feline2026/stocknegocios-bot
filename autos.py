@@ -35,7 +35,7 @@ class VisualSiteHandler(BaseHTTPRequestHandler):
         
         # Correção da lista: Extrai a busca sem os colchetes ['']
         if produto and produto:
-            prod_texto = produto.strip() if isinstance(produto, list) else produto.strip()
+            prod_texto = produto[0].strip() if isinstance(produto, list) else produto.strip()
             termo_olx = urllib.parse.quote_plus(prod_texto)
             
             # --- CONFIGURAÇÃO DOS AFILIADOS ---

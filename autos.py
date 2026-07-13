@@ -181,20 +181,23 @@ TOKEN = os.environ.get("TELEGRAM_TOKEN")
 def obter_avaliacao_ia(nome_veiculo):
     api_key = os.environ.get("GEMINI_API_KEY")
     if not api_key:
-        return "🤖 *Avaliação Inteligente StockNegócios:*\n_O avaliador automático está sendo configurado._"
+        return "🤖 *Avaliação:* Verifique a chave no Render."
     
+    # É AQUI QUE ENCAIXA A LINHA DA URL COMPLETÍSSIMA:
     url = f"https://googleapis.com{api_key}"
     headers = {"Content-Type": "application/json"}
-    prompt = f"Aja como um especialista em carros usados no Brasil. Faça uma mini avaliação do veículo '{nome_veiculo}'. Diga em formato de tópicos curtos: 1) Uma estimativa real de preço médio de mercado atual para esse ano. 2) Pontos fortes do carro. 3) O que o comprador deve checar antes de fechar negócio para não cair em cilada. Seja curto, direto e use emojis."
+    prompt = f"Diga resumidamente o preço médio estimado de mercado atual no Brasil para o veículo '{nome_veiculo}' e cite 2 pontos fortes em tópicos curtos com emojis. Seja muito breve."
+    
     payload = {"contents": [{"parts": [{"text": prompt}]}]}
     
     try:
-        response = httpx.post(url, json=payload, headers=headers, timeout=15.0)
+        response = httpx.post(url, json=payload, headers=headers, timeout=10.0)
         if response.status_code == 200:
-            return response.json()['candidates'][0]['content']['parts'][0]['text']
-        return "🤖 *Avaliação Inteligente StockNegócios:*\n_O sistema do Google está ocupado, confira os preços nos botões abaixo!_"
+            return response.json()['candidates']['content']['parts']['text']
+        return "🤖 *Avaliação:* Confira os preços nos botões abaixo."
     except Exception:
-        return "🤖 *Avaliação Inteligente StockNegócios:*\n_Consulte as ofertas locais e preços nos botões abaixo!_"
+        return "🤖 *Avaliação:* Compare os valores nos botões abaixo."
+
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data.clear()

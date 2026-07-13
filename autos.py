@@ -36,7 +36,14 @@ class VisualSiteHandler(BaseHTTPRequestHandler):
         # Correção da lista: Extrai a busca sem os colchetes ['']
         if produto and produto:
             prod_texto = produto[0].strip() if isinstance(produto, list) else produto.strip()
+            
+            # --- INTEGRAÇÃO DA IA COM O SEU SITE VISUAL ---
+            avaliacao_site = obter_avaliacao_ia(prod_texto)
+            avaliacao_limpa = avaliacao_site.replace("**", "").replace("*", "")
+            avaliacao_html = avaliacao_limpa.replace("\n", "<br>")
+                
             termo_olx = urllib.parse.quote_plus(prod_texto)
+
             
             # --- CONFIGURAÇÃO DOS AFILIADOS ---
             ID_AFILIADO_MERCADO_LIVRE = "TARCFELL"

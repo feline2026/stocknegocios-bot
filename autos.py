@@ -183,7 +183,9 @@ def obter_avaliacao_ia(nome_veiculo):
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data.clear()
-    await update.message.reply_text("Olá! Envie o nome de um produto para buscar.")
+    # O LUGAR CORRETO DA IA É AQUI!
+    avaliacao_texto = obter_avaliacao_ia(produto)
+    await update.message.reply_text(f"{avaliacao_texto}\n\n👇 *Confira as ofertas disponíveis:*", reply_markup=InlineKeyboardMarkup(botoes_links), parse_mode="Markdown")
 
 async def processar_busca_produto(update: Update, context: ContextTypes.DEFAULT_TYPE):
     produto = update.message.text.strip()

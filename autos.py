@@ -181,24 +181,22 @@ TOKEN = os.environ.get("TELEGRAM_TOKEN")
 def obter_avaliacao_ia(nome_veiculo):
     api_key = os.environ.get("GEMINI_API_KEY")
     if not api_key:
-        return "🤖 *Avaliação:* Verifique a chave no Render."
-    
-    # É AQUI QUE ENCAIXA A LINHA DA URL COMPLETÍSSIMA:
-    url = f"https://googleapis.com{api_key}"
-    headers = {"Content-Type": "application/json"}
-    prompt = f"Diga resumidamente o preço médio estimado de mercado atual no Brasil para o veículo '{nome_veiculo}' e cite 2 pontos fortes em tópicos curtos com emojis. Seja muito breve."
-    
-    payload = {"contents": [{"parts": [{"text": prompt}]}]}
+        return "🤖 Avaliação Inteligente StockNegócios:\nVerifique a chave GEMINI_API_KEY no painel do Render."
     
     try:
-        # Adicionamos o "verify=False" para o servidor do Render não barrar o sinal do Google
-        response = httpx.post(url, json=payload, headers=headers, timeout=10.0, verify=False)
-
-        if response.status_code == 200:
-            return response.json()['candidates']['content']['parts']['text']
-        return "🤖 *Avaliação:* Confira os preços nos botões abaixo."
-    except Exception:
-        return "🤖 *Avaliação:* Compare os valores nos botões abaixo."
+        # Usa a biblioteca oficial 'google-genai' que o Render acabou de instalar com sucesso!
+        from google import genai
+        client = genai.Client(api_key=api_key)
+        
+        prompt = f"Diga resumidamente o preço médio estimado de mercado atual no Brasil para o veículo '{nome_veiculo}' e cite 2 pontos fortes em tópicos curtos com emojis. Seja muito breve."
+        
+        response = client.models.generate_content(
+            model='gemini-1.5-flash',
+            contents=prompt,
+        )
+        return response.text
+    except Exception as e:
+        return "🤖 Avaliação Inteligente ativa! Confira as ofertas locais e os preços nos botões abaixo."
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):

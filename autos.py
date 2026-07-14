@@ -156,8 +156,16 @@ async def responder_botao_rebusca(update: Update, context: ContextTypes.DEFAULT_
     await query.edit_message_text(text="🏎️ Digite o nome do novo veículo que deseja buscar:")
 
 if __name__ == '__main__':
-    import threading
-    threading.Thread(target=ligar_site_producao, daemon=True).start()
+    # Primeiro criamos a estrutura do Telegram
     application = ApplicationBuilder().token(TOKEN).build()
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CallbackQueryHandler(responder_botao_rebusca))
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, processar_busca_produto))
+    
+    # Ligamos o site visual em segundo plano antes do Polling para não travar a porta
+    import threading
+    threading.Thread(target=ligar_site_producao, daemon=True).start()
+    
+    # E por fim damos o arranque final nas mensagens do celular
+    application.run_polling()
+

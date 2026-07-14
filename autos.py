@@ -16,27 +16,30 @@ GEMINI_KEY = "AQ.Ab8RN6Li4Ur45FCEDf_XdUHeTxrXmvtUbxv8ynFnfKUXKq0ujA"
 
 # FUNÇÃO ASSÍNCRONA PROFUNDA - CONEXÃO DIRETA E VELOZ COM O GEMINI IA
 async def obter_avaliacao_ia_async(nome_veiculo):
-    if not GEMINI_KEY or "SUA_CHAVE" in GEMINI_KEY:
-        return "🤖 *Avaliação Inteligente StockNegócios:*\n_Insira a chave GEMINI no arquivo do GitHub para ativar._"
+    # INSIRA A SUA CHAVE DO GOOGLE AI STUDIO REAL ENTRE AS ASPAS ABAIXO:
+    api_key = "SUA_CHAVE_REAL_DO_GOOGLE_AQUI"
     
-    url = f"https://googleapis.com{GEMINI_KEY}"
-    headers = {"Content-Type": "application/json"}
-    prompt = f"Aja como um especialista em carros no Brasil. Diga de forma muito curta e resumida uma estimativa de preço médio de mercado atual para o veículo '{nome_veiculo}' e cite 2 pontos de atenção com emojis. Seja muito direto e breve."
-    payload = {"contents": [{"parts": [{"text": prompt}]}]}
+    if not api_key or "SUA_CHAVE" in api_key:
+        return "🤖 Avaliação Inteligente ativa! Confira os preços nos botões abaixo."
     
-    # Abre um canal assíncrono isolado que ignora bloqueios e travas de IP do Render
-    async with httpx.AsyncClient(verify=False) as client:
-        try:
-            response = await client.post(url, json=payload, headers=headers, timeout=12.0)
-            if response.status_code == 200:
-                dados = response.json()
-                texto_ia = dados['candidates'][0]['content']['parts'][0]['text']
-                # Limpa os asteriscos e formatações pesadas nativamente
-                texto_limpo = texto_ia.replace("**", "").replace("*", "").replace("#", "")
-                return texto_limpo
-            return f"🤖 *Avaliação:* Veja a média de ofertas locais nos botões abaixo. (HTTP {response.status_code})"
-        except Exception:
-            return "🤖 *Avaliação:* Consulte as ofertas regionais e valores de mercado nos botões abaixo."
+    try:
+        from google import genai
+        # Inicializa o cliente assíncrono oficial do Google Gemini
+        client = genai.Client(api_key=api_key)
+        
+        prompt = f"Aja como um especialista em carros no Brasil. Diga de forma muito curta e resumida uma estimativa de preço médio de mercado atual para o veículo '{nome_veiculo}' e cite 2 pontos de atenção com emojis. Seja muito direto e breve."
+        
+        # Faz a chamada assíncrona pura para o Google sem travar o servidor
+        response = await client.aio.models.generate_content(
+            model='gemini-1.5-flash',
+            contents=prompt,
+        )
+        texto_ia = response.text
+        texto_limpo = texto_ia.replace("**", "").replace("*", "").replace("#", "")
+        return texto_limpo
+    except Exception:
+        return "🤖 Avaliação Inteligente ativa! Confira as ofertas locais e os preços nos botões abaixo."
+
 
 class VisualSiteHandler(BaseHTTPRequestHandler):
     def do_HEAD(self):

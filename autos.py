@@ -12,6 +12,28 @@ import os
 import threading
 import httpx
 from http.server import BaseHTTPRequestHandler, HTTPServer
+def obter_avaliacao_ia(nome_veiculo):
+    # INSIRA A SUA CHAVE DO GOOGLE AI STUDIO DIRETO ENTRE AS ASPAS ABAIXO:
+    api_key = "AQ.Ab8RN6Li4Ur45FCEDf_XdUHeTxrXmvtUbxv8ynFnfKUXKq0ujA"
+    
+    if not api_key or "COLE_AQUI" in api_key:
+        return "🤖 Avaliação Inteligente StockNegócios:\nInsira a sua chave secreta dentro do arquivo autos.py no GitHub."
+    
+    try:
+        from google import genai
+        client = genai.Client(api_key=api_key)
+        
+        prompt = f"Diga resumidamente o preço médio estimado de mercado atual no Brasil para o veículo '{nome_veiculo}' e cite 2 pontos fortes em tópicos curtos com emojis. Seja muito breve."
+        
+        response = client.models.generate_content(
+            model='gemini-1.5-flash',
+            contents=prompt,
+        )
+        return response.text
+    except Exception:
+        return "🤖 Avaliação Inteligente ativa! Confira as ofertas locais e os preços nos botões abaixo."
+
+
 
 # =====================================================================
 #  ⚙️ CÓDIGO DO SITE (VISUAL PREMIUM + ROTAS DIRETAS DE BUSCA)
@@ -178,34 +200,11 @@ def ligar_site_producao():
 #  🤖 CÓDIGO DO ROBÔ DO TELEGRAM (FORMATO SEGURO E CORRIGIDO)
 # =====================================================================
 TOKEN = os.environ.get("TELEGRAM_TOKEN")
-def obter_avaliacao_ia(nome_veiculo):
-    # INSIRA A SUA CHAVE DO GOOGLE AI STUDIO DIRETO ENTRE AS ASPAS ABAIXO:
-    api_key = "AQ.Ab8RN6Li4Ur45FCEDf_XdUHeTxrXmvtUbxv8ynFnfKUXKq0ujA"
-    
-    if not api_key or "COLE_AQUI" in api_key:
-        return "🤖 Avaliação Inteligente StockNegócios:\nInsira a sua chave secreta dentro do arquivo autos.py no GitHub."
-    
-    try:
-        from google import genai
-        client = genai.Client(api_key=api_key)
-        
-        prompt = f"Diga resumidamente o preço médio estimado de mercado atual no Brasil para o veículo '{nome_veiculo}' e cite 2 pontos fortes em tópicos curtos com emojis. Seja muito breve."
-        
-        response = client.models.generate_content(
-            model='gemini-1.5-flash',
-            contents=prompt,
-        )
-        return response.text
-    except Exception:
-        return "🤖 Avaliação Inteligente ativa! Confira as ofertas locais e os preços nos botões abaixo."
-
-
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data.clear()
-    # O LUGAR CORRETO DA IA É AQUI!
-    avaliacao_texto = obter_avaliacao_ia(produto)
-    await update.message.reply_text(f"{avaliacao_texto}\n\n👇 *Confira as ofertas disponíveis:*", reply_markup=InlineKeyboardMarkup(botoes_links), parse_mode="Markdown")
+    await update.message.reply_text("🏎️ Olá! Envie o nome de um veículo para buscar ofertas e ver a avaliação com IA.")
+
 
 async def processar_busca_produto(update: Update, context: ContextTypes.DEFAULT_TYPE):
     produto = update.message.text.strip()
@@ -245,7 +244,10 @@ async def processar_busca_produto(update: Update, context: ContextTypes.DEFAULT_
 
         # Dispara a IA do Google para gerar o preço médio antes de soltar os botões
     avaliacao_texto = obter_avaliacao_ia(produto)
-    await update.message.reply_text(f"{avaliacao_texto}\n\n👇 *Confira as ofertas disponíveis:*", reply_markup=structure_links)
+    avaliacao_texto = obter_avaliacao_ia(produto)
+    avaliacao_tele_limpa = avaliacao_texto.replace("**", "").replace("*", "")
+    await update.message.reply_text(f"{avaliacao_tele_limpa}\n\n👇 *Confira as ofertas disponíveis:*", reply_markup=structure_links)
+
 
 
 async def responder_botao_rebusca(update: Update, context: ContextTypes.DEFAULT_TYPE):

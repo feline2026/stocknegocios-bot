@@ -243,11 +243,10 @@ async def processar_busca_produto(update: Update, context: ContextTypes.DEFAULT_
 
     structure_links = InlineKeyboardMarkup(botoes_links)
 
-    await update.message.reply_text(
-        f"Aqui estão os melhores resultados que encontrei para: *{produto}*\n\nClique no botão abaixo para ver as ofertas:",
-        reply_markup=structure_links,
-        parse_mode="Markdown"
-    )
+        # Dispara a IA do Google para gerar o preço médio antes de soltar os botões
+    avaliacao_texto = obter_avaliacao_ia(produto)
+    await update.message.reply_text(f"{avaliacao_texto}\n\n👇 *Confira as ofertas disponíveis:*", reply_markup=structure_links)
+
 
 async def responder_botao_rebusca(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query

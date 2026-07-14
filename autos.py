@@ -179,12 +179,13 @@ def ligar_site_producao():
 # =====================================================================
 TOKEN = os.environ.get("TELEGRAM_TOKEN")
 def obter_avaliacao_ia(nome_veiculo):
-    api_key = os.environ.get("GEMINI_API_KEY")
-    if not api_key:
-        return "🤖 Avaliação Inteligente StockNegócios:\nVerifique a chave GEMINI_API_KEY no painel do Render."
+    # INSIRA A SUA CHAVE DO GOOGLE AI STUDIO DIRETO ENTRE AS ASPAS ABAIXO:
+    api_key = "AQ.Ab8RN6Li4Ur45FCEDf_XdUHeTxrXmvtUbxv8ynFnfKUXKq0ujA"
+    
+    if not api_key or "COLE_AQUI" in api_key:
+        return "🤖 Avaliação Inteligente StockNegócios:\nInsira a sua chave secreta dentro do arquivo autos.py no GitHub."
     
     try:
-        # Usa a biblioteca oficial 'google-genai' que o Render acabou de instalar com sucesso!
         from google import genai
         client = genai.Client(api_key=api_key)
         
@@ -195,8 +196,9 @@ def obter_avaliacao_ia(nome_veiculo):
             contents=prompt,
         )
         return response.text
-    except Exception as e:
+    except Exception:
         return "🤖 Avaliação Inteligente ativa! Confira as ofertas locais e os preços nos botões abaixo."
+
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):

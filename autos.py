@@ -50,9 +50,9 @@ class VisualSiteHandler(BaseHTTPRequestHandler):
         query_params = urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query)
         produto = query_params.get('p')
         
-        if produto:
-            prod_texto = produto[0].strip() if isinstance(produto, list) else produto.strip()
-            termo_olx = urllib.parse.quote_plus(prod_texto)
+         # Correção da lista: Extrai a busca sem os colchetes ['']
+         if produto and produto:
+             prod_texto = produto[0].strip() if isinstance(produto, list) else produto.strip()
             
             # Roda a função assíncrona profunda de forma segura dentro do servidor HTTP síncrono
             try:

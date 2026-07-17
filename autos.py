@@ -17,7 +17,7 @@ GEMINI_KEY = "AQ.Ab8RN6Li4Ur45FCEDf_XdUHeTxrXmvtUbxv8ynFnfKUXKq0ujA"
 # FUNÇÃO ASSÍNCRONA PROFUNDA - CONEXÃO DIRETA E VELOZ COM O GEMINI IA
 async def obter_avaliacao_ia_async(nome_veiculo):
     # INSIRA A SUA CHAVE DO GOOGLE AI STUDIO REAL ENTRE AS ASPAS ABAIXO:
-    api_key = "SUA_CHAVE_REAL_DO_GOOGLE_AQUI"
+    api_key = "AIzaSy_Sua_Chave_Real_Aqui"
     
     if not api_key or "SUA_CHAVE" in api_key:
         return "🤖 Avaliação Inteligente ativa! Confira os preços nos botões abaixo."

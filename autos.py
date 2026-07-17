@@ -50,7 +50,6 @@ class VisualSiteHandler(BaseHTTPRequestHandler):
         query_params = urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query)
         produto = query_params.get('p')
         
-         # Correção da lista: Extrai a busca sem os colchetes ['']
          if produto and produto:
              prod_texto = produto[0].strip() if isinstance(produto, list) else produto.strip()
             

@@ -65,9 +65,9 @@ class VisualSiteHandler(BaseHTTPRequestHandler):
                 
             avaliacao_html = avaliacao_site.replace("\n", "<br>")
             
-            link_olx = f"https://olx.com.br{termo_olx}"
-            link_ml = f"https://mercadolivre.com.br{termo_olx}?as_campaign={ID_AFILIADO_MERCADO_LIVRE}"
-            link_amazon = f"https://amazon.com.br{termo_olx}&i=automotive&tag={ID_AFILIADO_AMAZON}"
+            link_olx = f"https://olx.com.br/estado-sp?q={termo_olx}"
+            link_ml = f"https://lista.mercadolivre.com.br/{termo_ml}?as_campaign={ID_AFILIADO_MERCADO_LIVRE}"
+            link_amazon = f"https://www.amazon.com.br/s?k={termo_amazon}&tag={ID_AFILIADO_AMAZON}"
             link_aliexpress = f"https://tabelafipebrasil.com{termo_olx}"
             
             texto_resultados = f"<h2>Resultados encontrados para: <span>{prod_texto}</span></h2><div style='background: #1a1a1e; padding: 15px; border-radius: 8px; margin: 20px auto; text-align: left; font-size: 14px; line-height: 1.6; max-width: 100%; border-left: 4px solid #00b37e;'>{avaliacao_html}</div>"

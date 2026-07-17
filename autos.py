@@ -14,32 +14,30 @@ ID_AFILIADO_MAGALU = "tf"
 TOKEN = "8645090278:AAHUJMZaDPdFYth8HwrV5uVlvZQwwU57bZE"
 GEMINI_KEY = "AQ.Ab8RN6Li4Ur45FCEDf_XdUHeTxrXmvtUbxv8ynFnfKUXKq0ujA"
 
-# FUNÇÃO ASSÍNCRONA PROFUNDA - CONEXÃO DIRETA E VELOZ COM O GEMINI IA
-async def obter_avaliacao_ia_async(nome_veiculo):
-    # INSIRA A SUA CHAVE DO GOOGLE AI STUDIO REAL ENTRE AS ASPAS ABAIXO:
+# FUNÇÃO REESTRUTURADA - REQUISIÇÃO DIRETA ESTÁVEL PARA O GEMINI IA
+def obter_avaliacao_ia(nome_veiculo):
     api_key = GEMINI_KEY
-    
     if not api_key or "SUA_CHAVE" in api_key:
-        return "🤖 Avaliação Inteligente ativa! Confira os preços nos botões abaixo."
+        return "🤖 Avaliação Inteligente StockNegócios:\nInsira a chave GEMINI na linha 15 do arquivo do GitHub."
+    
+    # Rota estável HTTP que o site e o Telegram leem juntos sem conflito ou tela branca
+    url = f"https://googleapis.com{api_key}"
+    headers = {"Content-Type": "application/json"}
+    prompt = f"Aja como um especialista em carros no Brasil. Diga de forma muito curta e resumida uma estimativa de preço médio de mercado atual para o veículo '{nome_veiculo}' e cite 2 pontos de atenção com emojis. Seja muito direto e breve."
+    payload = {"contents": [{"parts": [{"text": prompt}]}]}
     
     try:
-        from google import genai
-        # Inicializa o cliente assíncrono oficial do Google Gemini
-        client = genai.Client(api_key=api_key)
-        
-        prompt = f"Aja como um especialista em carros no Brasil. Diga de forma muito curta e resumida uma estimativa de preço médio de mercado atual para o veículo '{nome_veiculo}' e cite 2 pontos de atenção com emojis. Seja muito direto e breve."
-        
-        # Faz a chamada assíncrona pura para o Google sem travar o servidor
-        response = await client.aio.models.generate_content(
-            model='gemini-1.5-flash',
-            contents=prompt,
-        )
-        texto_ia = response.text
-        texto_limpo = texto_ia.replace("**", "").replace("*", "").replace("#", "")
-        return texto_limpo
+        import httpx
+        # Faz a chamada rápida ignorando travas locais do servidor Linux do Render
+        response = httpx.post(url, json=payload, headers=headers, timeout=10.0, verify=False)
+        if response.status_code == 200:
+            dados = response.json()
+            texto_ia = dados['candidates'][0]['content']['parts'][0]['text']
+            texto_limpo = texto_ia.replace("**", "").replace("*", "").replace("#", "")
+            return texto_limpo
+        return f"🤖 Avaliação: Veja as ofertas regionais nos botões abaixo. (HTTP {response.status_code})"
     except Exception:
-        return "🤖 Avaliação Inteligente ativa! Confira as ofertas locais e os preços nos botões abaixo."
-
+        return "🤖 Avaliação Inteligente ativa! Confira as ofertas locais nos botões abaixo."
 
 class VisualSiteHandler(BaseHTTPRequestHandler):
     def do_HEAD(self):

@@ -42,32 +42,34 @@ def obter_avaliacao_ia(nome_veiculo):
 class VisualSiteHandler(BaseHTTPRequestHandler):
     def do_HEAD(self):
         self.send_response(200); self.send_header('Content-type', 'text/html; charset=utf-8'); self.end_headers()
-    def do_GET(self):
-        self.send_response(200); self.send_header('Content-type', 'text/html; charset=utf-8'); self.end_headers()
-        prod_texto = ""; html_botoes = ""; texto_resultados = "<h2>StockNegócios - Buscador Automotivo Ativo!</h2>"
+        def do_GET(self):
+        self.send_response(200)
+        self.send_header('Content-type', 'text/html; charset=utf-8')
+        self.end_headers()
+        
+        prod_texto = ""
+        html_botoes = ""
+        texto_resultados = "<h2>StockNegócios - Buscador Automotivo Ativo!</h2>"
+        
         query_params = urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query)
         produto = query_params.get('p')
         
-        if produto and produto[0]:
-            prod_texto = produto[0].strip()
+        if produto:
+            prod_texto = produto[0].strip() if isinstance(produto, list) else produto.strip()
+            termo_olx = urllib.parse.quote_plus(prod_texto)
             
-            # Roda a função assíncrona profunda de forma segura dentro do servidor HTTP síncrono
-            try:
-                loop = asyncio.new_event_loop()
-                asyncio.set_event_loop(loop)
-                avaliacao_site = loop.run_until_complete(obter_avaliacao_ia_async(prod_texto))
-                loop.close()
-            except Exception:
-                avaliacao_site = "🤖 Avaliação Inteligente ativa! Confira as ofertas nos botões abaixo."
-                
-            avaliacao_html = avaliacao_site.replace("\n", "<br>")
+            # Executa a chamada estável da IA para o site
+            avaliacao_site = obter_avaliacao_ia(prod_texto)
+            avaliacao_limpa = avaliacao_site.replace("**", "").replace("*", "").replace("#", "")
+            avaliacao_html = avaliacao_limpa.replace("\n", "<br>")
             
-            link_olx = f"https://olx.com.br/estado-sp?q={termo_olx}"
-            link_ml = f"https://lista.mercadolivre.com.br/{termo_ml}?as_campaign={ID_AFILIADO_MERCADO_LIVRE}"
-            link_amazon = f"https://www.amazon.com.br/s?k={termo_amazon}&tag={ID_AFILIADO_AMAZON}"
+            link_olx = f"https://olx.com.br{termo_olx}"
+            link_ml = f"https://mercadolivre.com.br{termo_olx}?as_campaign={ID_AFILIADO_MERCADO_LIVRE}"
+            link_amazon = f"https://amazon.com.br{termo_olx}&i=automotive&tag={ID_AFILIADO_AMAZON}"
             link_aliexpress = f"https://tabelafipebrasil.com{termo_olx}"
             
             texto_resultados = f"<h2>Resultados encontrados para: <span>{prod_texto}</span></h2><div style='background: #1a1a1e; padding: 15px; border-radius: 8px; margin: 20px auto; text-align: left; font-size: 14px; line-height: 1.6; max-width: 100%; border-left: 4px solid #00b37e;'>{avaliacao_html}</div>"
+            
             html_botoes = f"""
             <div class="box-botoes">
                 <a href="{link_ml}" target="_blank" class="btn btn-ml">🔧 Ver no Mercado Livre</a>
@@ -76,12 +78,7 @@ class VisualSiteHandler(BaseHTTPRequestHandler):
                 <a href="{link_aliexpress}" target="_blank" class="btn" style="background-color: #0056B3; color: white;">📊 Consultar Preço Tabela FIPE</a>
             </div>
             """
-        
-        texto_lgpd = "Aviso de Transparência e Privacidade:\\n\\nO StockNegócios é um buscador automotivo independente. Utiliza otimização de inteligência artificial para exibir as melhores ofertas regionais com links oficiais de afiliados."
 
-        html_pagina = f"""<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>StockNegócios - Buscador Automotivo</title>

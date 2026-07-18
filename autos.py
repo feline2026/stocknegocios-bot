@@ -78,8 +78,14 @@ class VisualSiteHandler(BaseHTTPRequestHandler):
                 <a href="{link_aliexpress}" target="_blank" class="btn" style="background-color: #0056B3; color: white;">📊 Consultar Preço Tabela FIPE</a>
             </div>
             """
+        
+        texto_lgpd = "Aviso de Transparência e Privacidade:\\n\\nO StockNegócios é um buscador automotivo independente. Utiliza inteligência artificial para exibir as melhores ofertas com links de afiliados."
 
+        html_pagina = f"""<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>StockNegócios - Buscador Automotivo</title>
     <style>
